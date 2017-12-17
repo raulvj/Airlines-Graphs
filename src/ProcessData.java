@@ -63,19 +63,29 @@ public class ProcessData {
 
     private static void showReport(Graph G){
         /*For each Vertex in Graph
-            currentLong = 0;
             Vertex fartherWest = null;
-            If ((v.getLongitud < 0) && (v.getLongitud < currentLong){
+            Vertex fartherNorth = null;
+
+            currentLong = 0;
+            If ((v.getLongitude < 0) && (v.getLongitude < currentLong)){
                 fartherWest = v;
-                current = v.getAltitude;
+                currentLong = v.getLongitude;
             }
-            //Same with North;
+            currentLat = 0;
+            If ((v.getLatitude > 0) && (v.getLatitude > currentLat)){
+                fartherNorth = v;
+                currentLat = v.getLatitude;
+            }
 
             connections = 0;
-            Vertex mostConnection = null;
-            If v.getConnections > connections
+            Vertex mostConnections = null;
+            If (v.getConnections > connections){
                 mostConnection = v;
                 connections = v.getConnections;
+            }
         */
+        System.out.println("FartherWest");
+        System.out.println("FartherNorth");
+        System.out.println("Most connections");
     }
 }
