@@ -63,11 +63,12 @@ public class ProcessData {
 
     private static void showReport(Graph G){
         /*For each Vertex in Graph
-            current = 0;
+            currentLong = 0;
             Vertex fartherWest = null;
-            If v.getAltitude > current
+            If ((v.getLongitud < 0) && (v.getLongitud < currentLong){
                 fartherWest = v;
                 current = v.getAltitude;
+            }
             //Same with North;
 
             connections = 0;
