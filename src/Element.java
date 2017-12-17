@@ -19,7 +19,6 @@ public interface Element {
     /**
      * This method returns the ID of the element
      * @return A string with the ID of the element
-     */
+     * */
     String getID();
-
 }
