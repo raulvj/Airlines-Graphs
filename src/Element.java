@@ -1,5 +1,7 @@
-
 //package src;
+
+//package graphsDSESIUCLM;
+
 
 /**
  * This interface defines the existence of a string used as an ID for an element
@@ -19,6 +21,7 @@ public interface Element {
     /**
      * This method returns the ID of the element
      * @return A string with the ID of the element
-     * */
+     */
     String getID();
+
 }

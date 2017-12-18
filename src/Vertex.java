@@ -1,5 +1,7 @@
 //package src;
 
+//package graphsDSESIUCLM;
+
 
 /**
  * This class represents the basic functional behavior of a vertex in
@@ -22,4 +24,3 @@ public interface Vertex <V> {
     public V getElement();
 
 }
-
