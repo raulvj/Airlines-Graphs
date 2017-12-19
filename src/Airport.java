@@ -60,7 +60,8 @@ public class Airport {
         return this.connections;
     }
 
-    public void setConnections(){
+    public void setConnections(int value){
         //FIXME Create method to deal with connections.
+        this.connections = value;
     }
 }

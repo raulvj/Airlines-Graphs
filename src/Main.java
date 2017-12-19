@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ProcessData {
+public class Main {
     public static void main(String[] args) {
 
         Graph<DecoratedElement<Airport>,Edge> graph = new TreeMapGraph<DecoratedElement<Airport>,Edge>();
@@ -30,7 +30,7 @@ public class ProcessData {
                 String[] splited = read.split(",");
                 if (splited[3].equals("\"Spain\"")|| splited[3].equals("\"Italy\"") || splited[3].equals("\"France\"") || splited[3].equals("\"Germany\""))
                 {
-                    //Use the openflights ID value for the airport identifier.
+                    //Use the Openflights ID value for the airport identifier.
                     System.out.println(splited[1]+" "+splited[0]);
                     //FIXME Check if works.
                     if(splited[4] != null){
@@ -50,10 +50,12 @@ public class ProcessData {
                 //Use the openflights ID value.
                 System.out.println("Origin ID: "+splited[3]+", Arrival ID: "+splited[5]);
                 //FIXME Check if works.
-                u = graph.getVertex(splited[2]); // splited[2];
-                v = graph.getVertex(splited[4]); // splited[4];
+                u = graph.getVertex(splited[2]);
+                v = graph.getVertex(splited[4]);
 
                 if(u != null && v != null){
+                    u.getElement().getElement().setConnections(u.getElement().getElement().getConnections() +1);
+                    v.getElement().getElement().setConnections(v.getElement().getElement().getConnections() +1);
                     graph.insertEdge(u,v);
                 }
             }
@@ -70,29 +72,18 @@ public class ProcessData {
     }
 
     private static void showAirports(Graph g){
-
-        /*For each Vertex in Graph
-        Print airportID/airportName/airportCountry;
-        */
-
         for (Iterator<Vertex<Airport>> item = g.getVertices(); item.hasNext();) {
             System.out.printf("Airport ID: %s, Airport name: %s, Airport country: %s", item.next().getElement().getID(), item.next().getElement().getName(), item.next().getElement().getCountry());
         }
     }
 
     private static void showFlights(Graph g){
-
-        /*For each Edge in Graph
-        Print routeID/originID+Name/destinationID+Name
-        */
-
         for (Iterator<Edge<Route>> item = g.getEdges(); item.hasNext();) {
-            System.out.printf("Flights: OriginAirport - DestinationAirport\n%s - %s", item.next().getElement().getSourceAirport(), item.next().getElement().getDestinationAirport());
+            System.out.printf("Flights: OriginAirport - DestinationAirport\n%s - %s", item.next().getElement(), item.next().getElement().getDestinationAirport());
         }
     }
 
     private static void showReport(Graph g){
-
         /*For each Vertex in Graph
             Vertex fartherWest = null;
             Vertex fartherNorth = null;
@@ -142,5 +133,19 @@ public class ProcessData {
         System.out.printf("FartherWest: %s", fartherWest.getElement().getID());
         System.out.printf("FartherNorth: %s", fartherNorth.getElement().getID());
         System.out.printf("Most connections: %s with %d connections", mostconnected.getElement().getID(),mostconnected.getElement().getConnections());
+    }
+
+    private static void depthFirstSearch(Graph g, Vertex<DecoratedElement<Airport>> v){
+        /*
+        PreVisit(v); //perform some action at node v
+        label v as VISITED
+        for each node u adjacent to v do
+            if u is not visited then
+                set v as node parent of u //if needed
+                DFS(G,u)
+            end_if
+        end_for
+        PostVisit(v) //perform some action at node v
+        */
     }
 }
