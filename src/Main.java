@@ -183,6 +183,32 @@ public class Main {
         */
     }
 
+    private static List shortestPath(Graph<DecoratedElement<Airport>, Edge> g, Vertex<DecoratedElement<Airport>> origin, Vertex<DecoratedElement<Airport>>des) {
+        Queue<Vertex<DecoratedElement<Airport>>> queue = new ArrayDeque();
+        queue.add(origin);
+        origin.getElement().setVisited(true);
+
+        while (0 != queue.size()) {
+            Vertex<DecoratedElement<Airport>> u = queue.remove();
+            u.getElement().setVisited(true);
+
+            for (Iterator<Vertex<DecoratedElement<Airport>>> it = g.getVertices(); it.hasNext(); ) {
+                Vertex<DecoratedElement<Airport>> z = it.next();
+                if (g.areAdjacent(z, u)) {
+                    if(z.equals(des)){
+                        return (List) queue;
+                    }
+                    if (!z.getElement().isVisited()) {
+                        z.getElement().setVisited(true);
+                        z.getElement().setParent(u.getElement());
+                        queue.add(u);
+                    }
+                }
+            }
+        }
+        return (List) queue;
+    }
+
     @SuppressWarnings("unused")
     private static void breadthFirstSearch(Graph<DecoratedElement<Airport>, Edge> g, Vertex<DecoratedElement<Airport>> v) {
         /*
