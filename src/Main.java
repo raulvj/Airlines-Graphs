@@ -183,7 +183,7 @@ public class Main {
         */
     }
 
-    private static List shortestPath(Graph<DecoratedElement<Airport>, Edge> g, Vertex<DecoratedElement<Airport>> origin, Vertex<DecoratedElement<Airport>>des) {
+    private static List findPath(Graph<DecoratedElement<Airport>, Edge> g, Vertex<DecoratedElement<Airport>> origin, Vertex<DecoratedElement<Airport>>des) {
         Queue<Vertex<DecoratedElement<Airport>>> queue = new ArrayDeque();
         queue.add(origin);
         origin.getElement().setVisited(true);
@@ -195,7 +195,7 @@ public class Main {
             for (Iterator<Vertex<DecoratedElement<Airport>>> it = g.getVertices(); it.hasNext(); ) {
                 Vertex<DecoratedElement<Airport>> z = it.next();
                 if (g.areAdjacent(z, u)) {
-                    if(z.equals(des)){
+                    if(z.getElement().equals(des.getElement())){
                         return (List) queue;
                     }
                     if (!z.getElement().isVisited()) {
