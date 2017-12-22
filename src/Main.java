@@ -29,16 +29,16 @@ public class Main {
         System.out.printf("There is a total of %d airports between the 4 countries.\n", graph.getN());
         System.out.printf("The total amount of flights between them is %d.\n", graph.getM());
         
-        //showAirports(graph);
+        showAirports(graph);
         //showFlights(graph);
         showReport(graph);
         //spyGame(graph);
         
-        //Vertex<DecoratedElement<Airport>> origin = graph.getVertex("TFS");
-        //Vertex<DecoratedElement<Airport>> dest = graph.getVertex("VLC");
-        //ArrayList<Vertex<DecoratedElement<Airport>>> routes = new ArrayList<Vertex<DecoratedElement<Airport>>>();
-        //depthFirstSearch(graph, origin, dest, routes);
-        //breadthFirstSearch(graph, origin, dest);       
+        Vertex<DecoratedElement<Airport>> origin = graph.getVertex("MAD");
+        Vertex<DecoratedElement<Airport>> dest = graph.getVertex("ZAZ");
+        ArrayList<Vertex<DecoratedElement<Airport>>> routes = new ArrayList<Vertex<DecoratedElement<Airport>>>();
+        depthFirstSearch(graph, origin, dest, routes);
+        breadthFirstSearch(graph, origin, dest);       
     }
     
     /*********************************************************************
@@ -268,8 +268,7 @@ public class Main {
     *
     *********************************************************************/
     private static void depthFirstSearch(Graph<DecoratedElement<Airport>, Edge> g, Vertex<DecoratedElement<Airport>> origin, Vertex<DecoratedElement<Airport>> dest, ArrayList<Vertex<DecoratedElement<Airport>>> routes){        
-        
-    	//ArrayList<Vertex<DecoratedElement<Airport>>> routes = new ArrayList<Vertex<DecoratedElement<Airport>>>();
+            	
         Vertex<DecoratedElement<Airport>> aux = null; //The node we are going to use as auxiliary.
         Edge ed = null;
         
@@ -290,7 +289,7 @@ public class Main {
         			System.out.println("The route that he has followed is: \n");
 
         			for(int i=0; i < routes.size(); i++) {
-        				System.out.printf("/ %s", routes.get(i).getElement().getElement().getName());
+        				System.out.printf("/ %s", routes.get(i).getElement().getElement().getID());
         			}
         			break;
         		}else {
@@ -357,7 +356,7 @@ public class Main {
     	
     	//ALGORITHM SIMPLEPATH.    	
     	Queue<Vertex<DecoratedElement<Airport>>> queue = new LinkedList();
-    	Vertex<DecoratedElement<Airport>> u, v;
+    	Vertex<DecoratedElement<Airport>> u, v = null;
     	DecoratedElement<Airport> dec;
     	Edge ed;
     	
@@ -370,40 +369,49 @@ public class Main {
     	while(it2.hasNext()) {
     		dec = it2.next().getElement();
     		dec.setVisited(false);
-    	}
-    	
-    	origin.getElement().setVisited(true);
-    	queue.offer(origin);
-    	
-    	while(!queue.isEmpty() && noEnd) {
-    		u = queue.peek();
-    		it1 = g.incidentEdges(u);
-    		
-    		while(it1.hasNext() && noEnd) {
-    			ed = it1.next();
-    			v = g.opposite(u, ed);
-    			
-    			if(v.getElement().equals(dest.getElement())) {
-    				queue.offer(v);
-    				noEnd = false;
-    			}else {
-        			if(!v.getElement().isVisited()) {
-        				v.getElement().setVisited(true);
-        				queue.offer(v);
-        				noEnd = !(v.getElement().equals(dest.getElement()));			
+    	}   	
+
+    	try {
+        	origin.getElement().setVisited(true);
+        	queue.offer(origin);
+        	while(!queue.isEmpty() && noEnd) {
+        		u = queue.poll();
+        		it1 = g.incidentEdges(u);
+        		
+        		while(it1.hasNext() && noEnd) {
+        			ed = it1.next();
+        			v = g.opposite(u, ed);
+        			v.getElement().setParent(u.getElement());
+        			queue.offer(v);
+        			
+        			if(v.getElement().equals(dest.getElement())) {
+        				noEnd = false;
         			}
-    			}
-    		}
+        		}
+        	}
+        	
+        	if(!noEnd) {        		
+        		printer(v.getElement(), origin.getElement()); 		    	
+        	}
     	}
-    	
-    	if(!noEnd) {
-    		length = queue.size();
-    		System.out.println("\n\nThe route that the spy has followed is: \n");
+    	catch(NullPointerException e) {
     		
-    		for(int i=0; i < length; i++) {
-    			System.out.printf("/ %s\n", queue.remove().getElement().getElement().getName());
-    		}    		    	
     	}
+
+    }
+
+    
+    private static void printer(DecoratedElement<Airport> v, DecoratedElement<Airport> origin) {
+		System.out.println("\nThe route that the spy has followed is: \n");    		
+		DecoratedElement<Airport> aux;
+		aux = v.getParent();
+		
+		if(aux.getElement().equals(origin.getElement())) {
+			System.out.printf("/ %s ", aux.getElement().getID());
+		}else {
+			printer(aux, origin);			
+		}		
+		System.out.printf("/ %s ", v.getElement().getID()); 
     }
     
     /*********************************************************************
