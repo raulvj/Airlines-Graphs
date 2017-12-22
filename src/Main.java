@@ -2,23 +2,24 @@
 import java.io.*;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
 import java.util.Queue;
 import java.util.Scanner;
+import java.util.concurrent.LinkedBlockingDeque;
 
 
 /*********************************************************************
 *
-* Class Name:
-* Author/s name:
-* Release/Creation date:
-* Class version:
-* Class description: A brief description of what the class does
+* Class Name: Main
+* Author/s name: Raúl Valentín Jorge, Javier Romero Sánchez.
+* Release/Creation date:22-12-2017
+* Class version:3
+* Class description: Contains the executable and the main methods.
 *
-**********************************************************************
-*/
+***********************************************************************/
 public class Main {
     public static void main(String[] args) {
 
@@ -29,42 +30,26 @@ public class Main {
         System.out.printf("There is a total of %d airports between the 4 countries.\n", graph.getN());
         System.out.printf("The total amount of flights between them is %d.\n", graph.getM());
         
-        //showAirports(graph);
-        //showFlights(graph);
         showReport(graph);
-        //spyGame(graph);
-        
-        Vertex<DecoratedElement<Airport>> origin = graph.getVertex("MAD");
-        Vertex<DecoratedElement<Airport>> dest = graph.getVertex("EBA");
-        ArrayList<Vertex<DecoratedElement<Airport>>> routes = new ArrayList<Vertex<DecoratedElement<Airport>>>();
-        depthFirstSearch(graph, origin, dest, routes);
-        breadthFirstSearch(graph, origin, dest);       
+        spyGame(graph);             
     }
     
     /*********************************************************************
     *
-    * Method name:
+    * Method name: removeDoubleQuotes
     *
-    * Name of the original author (if the module author is different
-    * than the author of the file):
+    * Name of the original author: Raúl Valentín Jorge
     *
-    * Description of the Method: A description of what the method does.
+    * Description of the Method: Remove the " of the name of the data.
     *
-    * Calling arguments: A list of the calling arguments, their types, and
-    * brief explanations of what they do.
+    * Calling arguments: @param splited
     *
-    * Return value: it type, and a brief explanation of what it does.
-    *
-    * Required Files: A list of required files needed by the method,
-    * indicating if the method expects files to be already opened (only if
-    * files are used)
-    *
-    * List of Checked Exceptions and an indication of when each exception
-    * is thrown.
+    * Return value: @return result
     *
     *********************************************************************/
     private static String[] removeDoubleQuotes(String[] splited) {
     	String[] result = new String[splited.length];
+    	
     	for(int i=0; i < splited.length; i++) {
     		result[i] = splited[i].replace("\"", "");
     	}
@@ -73,24 +58,19 @@ public class Main {
     
     /*********************************************************************
     *
-    * Method name:
+    * Method name: processData
     *
-    * Name of the original author (if the module author is different
-    * than the author of the file):
+    * Name of the original author: Raúl Valentín Jorge, Javier Romero Sánchez.
     *
-    * Description of the Method: A description of what the method does.
+    * Description of the Method: Reads airports.dat and routes.dat and creates and the nodes and the edges of the graph.
     *
-    * Calling arguments: A list of the calling arguments, their types, and
-    * brief explanations of what they do.
+    * Calling arguments: @param graph
     *
-    * Return value: it type, and a brief explanation of what it does.
+    * Required Files: airports.dat routes.dat
     *
-    * Required Files: A list of required files needed by the method,
-    * indicating if the method expects files to be already opened (only if
-    * files are used)
-    *
-    * List of Checked Exceptions and an indication of when each exception
-    * is thrown.
+    * List of Checked Exceptions:
+    * @exception IOException if the previous files are not found.
+    * @exception NullPointerException if 
     *
     *********************************************************************/
 	@SuppressWarnings("rawtypes")
@@ -106,10 +86,10 @@ public class Main {
             while ((read = in.readLine()) != null) {
                 String[] splited = read.split(",");
                 String[] withoutQuote;
-                if (splited[3].equals("\"Spain\"") || splited[3].equals("\"Italy\"") || splited[3].equals("\"France\"") || splited[3].equals("\"Germany\"")){
-                    //Use the IATA code for the airport identifier.
-                	
+                if (splited[3].equals("\"Spain\"") || splited[3].equals("\"Italy\"") || splited[3].equals("\"France\"") || splited[3].equals("\"Germany\"")){                   
+                	//Use the IATA code for the airport identifier.               	
                 	withoutQuote = removeDoubleQuotes(splited);
+                	
                     if(! splited[4].equals("\\N")){
                         airport = new Airport(withoutQuote[4], withoutQuote[1], withoutQuote[3],withoutQuote[2], Double.parseDouble(withoutQuote[6]), Double.parseDouble(withoutQuote[7]), Double.parseDouble(withoutQuote[8]));
                         decoratedElement = new DecoratedElement<Airport>(airport.getID(),airport);
@@ -126,8 +106,7 @@ public class Main {
                 String[] splited2 = read.split(",");
                 //Use the IATA code to identify the routes.
                 
-                try {
-                	//System.out.println(String.format("\"%s\"", splited2[2]));                	
+                try {               	
                 	u = graph.getVertex(splited2[2]).getElement();
                     v = graph.getVertex(splited2[4]).getElement();
 
@@ -137,8 +116,7 @@ public class Main {
                         v.getElement().setConnections(v.getElement().getConnections() + 1);
                     }
                 }catch (NullPointerException e) {
-                	//System.out.println(e.getMessage());
-                	//e.printStackTrace();
+                	//As there will be too many 'null' values, do nothing with them, just keep going.
                 }
             }
         } catch (IOException e) {
@@ -151,58 +129,25 @@ public class Main {
                 System.out.println(e.getMessage());
             }
         }
-    }
-	
-	/* DELETE WHEN FINAL VERSION */
-    @SuppressWarnings({ "rawtypes", "unused" })
-	private static void showAirports(Graph<DecoratedElement<Airport>, Edge> graph){
-    	DecoratedElement<Airport> object;
-    	System.out.println("\nAirport information:");
-    	
-        for (Iterator<Vertex<DecoratedElement<Airport>>> item = graph.getVertices(); item.hasNext();) {
-        	object = item.next().getElement(); 
-            System.out.printf("IATA: %s\t Country: %s \t Airport name: %s\n", object.getElement().getID(), object.getElement().getCountry(), object.getElement().getName());
-        }
-    }
-    
-    /* DELETE WHEN FINAL VERSION */
-    @SuppressWarnings({ "rawtypes", "unused" })
-	private static void showFlights(Graph<DecoratedElement<Airport>, Edge> graph){
-        Edge<Edge> object;
-        Vertex<DecoratedElement<Airport>>[] vertices;
-        System.out.println("\nFlights: Origin Airport - Destination Airport");
-        
-        for (Iterator<Edge<Edge>> item = graph.getEdges(); item.hasNext();) {
-        	object = item.next();
-        	vertices = graph.endVertices(object);
-            System.out.printf("%s - %s\n", vertices[0].getElement().getElement().getName(), vertices[1].getElement().getElement().getName());
-        }
-    }
+    }	
     
     /*********************************************************************
     *
-    * Method name:
+    * Method name: showReport
     *
-    * Name of the original author (if the module author is different
-    * than the author of the file):
+    * Name of the original author : Raúl Valentín Jorge.
     *
-    * Description of the Method: A description of what the method does.
+    * Description of the Method: Goes through the whole graph and gets the number of airports, how many connections, the airport with most connections and the farthest west and farthest north one, calculates the average altitude.
     *
-    * Calling arguments: A list of the calling arguments, their types, and
-    * brief explanations of what they do.
+    * Calling arguments: @param graph
     *
-    * Return value: it type, and a brief explanation of what it does.
-    *
-    * Required Files: A list of required files needed by the method,
-    * indicating if the method expects files to be already opened (only if
-    * files are used)
-    *
-    * List of Checked Exceptions and an indication of when each exception
-    * is thrown.
+    * List of Checked Exceptions:
+    * 
+    * @exception NoSuchElementException
     *
     *********************************************************************/
     @SuppressWarnings({ "rawtypes" })
-	private static void showReport(Graph<DecoratedElement<Airport>, Edge> graph){ //Add AVG altitude.
+	private static void showReport(Graph<DecoratedElement<Airport>, Edge> graph){
         DecoratedElement<Airport> fartherWest = null;
         DecoratedElement<Airport> fartherNorth = null;
         DecoratedElement<Airport> mostconnected = null;
@@ -214,9 +159,10 @@ public class Main {
         int avg_altitude = 0;
 
         try {
+        	
             for (Iterator<Vertex<DecoratedElement<Airport>>> item = graph.getVertices(); item.hasNext();) {
-            	//Check if the item has appear before.
             	test = item.next().getElement();
+            	
                 if((test.getElement().getLongitude() < 0) && (test.getElement().getLongitude() < currentLong)){
                     fartherWest = test;
                     currentLong = fartherWest.getElement().getLongitude();
@@ -247,31 +193,18 @@ public class Main {
     
     /*********************************************************************
     *
-    * Method name:
+    * Method name:depthFirstSearch()
     *
-    * Name of the original author (if the module author is different
-    * than the author of the file):
+    * Name of the original author: Raúl Valentín Jorge, Javier Romero Sánchez.
     *
-    * Description of the Method: A description of what the method does.
+    * Description of the Method: Goes through the whole graph and creates a route to the destination. 
     *
-    * Calling arguments: A list of the calling arguments, their types, and
-    * brief explanations of what they do.
-    *
-    * Return value: it type, and a brief explanation of what it does.
-    *
-    * Required Files: A list of required files needed by the method,
-    * indicating if the method expects files to be already opened (only if
-    * files are used)
-    *
-    * List of Checked Exceptions and an indication of when each exception
-    * is thrown.
+    * Calling arguments:@param g, @param origin, @param dest, @param routes.
     *
     *********************************************************************/
-    private static void depthFirstSearch(Graph<DecoratedElement<Airport>, Edge> g, Vertex<DecoratedElement<Airport>> origin, Vertex<DecoratedElement<Airport>> dest, ArrayList<Vertex<DecoratedElement<Airport>>> routes){        
-            	
+    private static void depthFirstSearch(Graph<DecoratedElement<Airport>, Edge> g, Vertex<DecoratedElement<Airport>> origin, Vertex<DecoratedElement<Airport>> dest, ArrayList<Vertex<DecoratedElement<Airport>>> routes){                    	
         Vertex<DecoratedElement<Airport>> aux = null; //The node we are going to use as auxiliary.
-        Edge ed = null;
-        
+        Edge ed = null;       
         origin.getElement().setVisited(true);
         Iterator<Edge<Edge>> it = g.incidentEdges(origin);
         routes.add(origin);
@@ -286,7 +219,7 @@ public class Main {
         		//END CONDITION
         		if(aux.getElement().getElement().getID().equals(dest.getElement().getElement().getID())) {
         			routes.add(dest);
-        			System.out.println("The route that he has followed is: \n");
+        			System.out.println("\nThe route that he has followed is: ");
 
         			for(int i=0; i < routes.size(); i++) {
         				System.out.printf("/ %s", routes.get(i).getElement().getElement().getID());
@@ -301,60 +234,20 @@ public class Main {
     
     /*********************************************************************
     *
-    * Method name:
+    * Method name: breadthFirstSearch
     *
-    * Name of the original author (if the module author is different
-    * than the author of the file):
+    * Name of the original author : Raúl Valentín Jorge, Javier Romero Sánchez.
     *
-    * Description of the Method: A description of what the method does.
+    * Description of the Method: Goes through the whole graph and gets the most optimal route to the destination.
     *
-    * Calling arguments: A list of the calling arguments, their types, and
-    * brief explanations of what they do.
+    * Calling arguments: @param g, @param origin, @param dest.
     *
-    * Return value: it type, and a brief explanation of what it does.
-    *
-    * Required Files: A list of required files needed by the method,
-    * indicating if the method expects files to be already opened (only if
-    * files are used)
-    *
-    * List of Checked Exceptions and an indication of when each exception
-    * is thrown.
+    * List of Checked Exceptions:
+    * 
+    * NullPointerException: In the case that the node has no parent.
     *
     *********************************************************************/
-    private static void breadthFirstSearch(Graph<DecoratedElement<Airport>, Edge> g, Vertex<DecoratedElement<Airport>> origin, Vertex<DecoratedElement<Airport>> dest){
-        
-    	/*
-         * Queue<Vertex<DecoratedElement<Airport>>> queue = new ArrayDeque();
-	        queue.add(origin);
-	        origin.getElement().setVisited(true);
-
-	        while (! queue.isEmpty()){
-	            Vertex<DecoratedElement<Airport>> aux = queue.remove();
-	            aux.getElement().setVisited(true);
-	            
-	            //ESTE FOR ES EL QUE FALLA, SOLO HAY QUE COGER UN ITERATOR CON LOS VERTICES QUE SEAN ADYACENTES!!!!!!                        
-	            for (Iterator<Vertex<DecoratedElement<Airport>>> it = g.getVertices(); it.hasNext(); ) {
-	            	number++;
-	                Vertex<DecoratedElement<Airport>> z = it.next();
-	                if (g.areAdjacent(z, aux)) {
-	                	if((! z.getElement().isVisited()) && (! queue.contains(z))) {
-	                		z.getElement().setVisited(true);
-	                		z.getElement().setParent(aux.getElement());
-	                		queue.add(z);
-	                	}
-	                }                
-	            }
-	              
-	            if(z.getElement().getElement().getID().equals(dest.getElement().getElement().getID())) {
-	                for(int i = 0; i < queue.size(); i++) {
-	                	System.out.println(queue.remove().getElement().getElement().getName());
-	                }
-	                break;
-	            }               
-	        }
-        */
-    	
-    	//ALGORITHM SIMPLEPATH.    	
+    private static void breadthFirstSearch(Graph<DecoratedElement<Airport>, Edge> g, Vertex<DecoratedElement<Airport>> origin, Vertex<DecoratedElement<Airport>> dest){    	
     	Queue<Vertex<DecoratedElement<Airport>>> queue = new LinkedList();
     	Vertex<DecoratedElement<Airport>> u, v = null;
     	DecoratedElement<Airport> dec;
@@ -382,94 +275,71 @@ public class Main {
         		while(it1.hasNext() && noEnd) {
         			ed = it1.next();
         			v = g.opposite(u, ed);
-        			v.getElement().setParent(u.getElement());
+        			
+        			if(v.getElement().getParent() == null) {
+        				v.getElement().setParent(u.getElement());
+        			}
         			queue.offer(v);
         			
         			if(v.getElement().equals(dest.getElement())) {
-        				noEnd = false;
+        				noEnd = false;        				
         			}
-        		}
+        		}       		       		
         	}
-        	
-        	if(!noEnd) {
-        		System.out.println("\nThe route that the spy has followed is: \n");
-        		//printer(dest.getElement(), origin.getElement()); 
-        		Queue<DecoratedElement<Airport>> end = new LinkedList();
-        		end.add(v.getElement());
-        		DecoratedElement<Airport> aux;
-        		System.out.println("Hello");
-        		do {        			
-        			aux = v.getElement().getParent();
-        			end.add(aux);
-        		}while(!aux.equals(origin.getElement()));
+        	       	
+        	System.out.println("\nThe route that the spy has followed is: ");
+
+        	Deque<DecoratedElement<Airport>> end = new LinkedBlockingDeque();
+        	end.add(v.getElement());
+        	DecoratedElement<Airport> aux = v.getElement().getParent();
         		
-        		System.out.println("Hello");
+        	while(!aux.getElement().getID().equals(origin.getElement().getElement().getID())) {        			
+        		end.add(aux);
+        		aux = aux.getParent();      			
+        	}
         		
-        		while(! end.isEmpty()) {
-        			System.out.printf("/ %s ", end.remove().getElement().getID());
-        		}
+        	if(aux.getElement().getID().equals(origin.getElement().getElement().getID())) {
+        		end.add(origin.getElement());
+        	}        		
+        		
+        	while(! end.isEmpty()) {
+        		System.out.printf("/ %s ", end.removeLast().getElement().getID());
         	}
         	
     	}catch(NullPointerException e) {
-    		System.out.println("There is no connection available");
+    		//As we did before, keep working.
     	}
-
-    }
-
-    
-    private static void printer(DecoratedElement<Airport> v, DecoratedElement<Airport> origin) {		    		
-		DecoratedElement<Airport> aux = v.getParent();
-		try {
-			
-			if(!aux.equals(origin)) {
-				printer(aux, origin);				
-			}
-						
-			System.out.printf("/ %s ", aux.getElement().getID());
-			//System.out.printf("/ %s ", v.getElement().getID());
-		}catch(StackOverflowError e) {
-			
-		}
     }
     
     /*********************************************************************
     *
-    * Method name:
+    * Method name:spyGame
     *
-    * Name of the original author (if the module author is different
-    * than the author of the file):
+    * Name of the original author : Raúl Valentín Jorge, Javier Romero Sánchez
     *
-    * Description of the Method: A description of what the method does.
+    * Description of the Method: Recreates the scenario of someone going from point A to B through one of the possible routes(depthFirstSearch.). 
+    * Meanwhile, a spy has to go to the same point B by using the shortest route (breadthFirstSearch.). Request in the command line the ID of the 2
+    * airports and prints the route each one has used.
     *
-    * Calling arguments: A list of the calling arguments, their types, and
-    * brief explanations of what they do.
-    *
-    * Return value: it type, and a brief explanation of what it does.
-    *
-    * Required Files: A list of required files needed by the method,
-    * indicating if the method expects files to be already opened (only if
-    * files are used)
-    *
-    * List of Checked Exceptions and an indication of when each exception
-    * is thrown.
+    * Calling arguments: @param graph
     *
     *********************************************************************/
-    @SuppressWarnings("unused")
-	private static void spyGame(Graph<DecoratedElement<Airport>, Edge> graph) {
+    private static void spyGame(Graph<DecoratedElement<Airport>, Edge> graph) {
         //Read by keyboard the airport Source and Destination.
     	Scanner keyboard = new Scanner(System.in);
     	
-    	System.out.println("\nIntroduce the IATA code of the origin airport: ");
+    	System.out.print("\nIntroduce the IATA code of the origin airport: ");
     	String origin = keyboard.next();
     	Vertex<DecoratedElement<Airport>> ori = graph.getVertex(origin);
     	
-    	System.out.println("\nIntroduce the IATA code of the destination airport: ");
+    	System.out.print("\nIntroduce the IATA code of the destination airport: ");
     	String destination = keyboard.next();
     	Vertex<DecoratedElement<Airport>> dest = graph.getVertex(destination);
     	
     	ArrayList<Vertex<DecoratedElement<Airport>>> routes = new ArrayList<Vertex<DecoratedElement<Airport>>>();
-        depthFirstSearch(graph, ori, dest, routes);
-        breadthFirstSearch(graph, ori, dest);
+        depthFirstSearch(graph, ori, dest, routes); //with this algorithm we will calculate a random route.
+        breadthFirstSearch(graph, ori, dest); //with this algorithm we calculate the shortest path.
+        
     	keyboard.close();
 	}
 }
