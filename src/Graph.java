@@ -4,14 +4,17 @@
 
 //package graphsDSESIUCLM;
 
+import java.util.TreeMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Iterator;
 
 /**
 * This interface defines the functionality of an undirected graph where
 * elements can be stored in vertices and edges.
 *
-* @author Alfonso Niï¿½o
-* @author Camelia Muï¿½oz-Caro
+* @author Alfonso Niño
+* @author Camelia Muñoz-Caro
 * @author Crescencio Bravo
 * @version November 2014
 *
@@ -203,4 +206,5 @@ public interface Graph<V, E> {
    * @return The number of edges in the graph.
    */
   public int getM();
+
 }

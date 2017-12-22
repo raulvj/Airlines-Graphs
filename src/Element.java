@@ -26,4 +26,5 @@ public interface Element {
    */
   String getID();
 
+  boolean equals(Object n);
 }
