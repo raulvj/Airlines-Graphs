@@ -29,13 +29,13 @@ public class Main {
         System.out.printf("There is a total of %d airports between the 4 countries.\n", graph.getN());
         System.out.printf("The total amount of flights between them is %d.\n", graph.getM());
         
-        showAirports(graph);
+        //showAirports(graph);
         //showFlights(graph);
         showReport(graph);
         //spyGame(graph);
         
         Vertex<DecoratedElement<Airport>> origin = graph.getVertex("MAD");
-        Vertex<DecoratedElement<Airport>> dest = graph.getVertex("ZAZ");
+        Vertex<DecoratedElement<Airport>> dest = graph.getVertex("EBA");
         ArrayList<Vertex<DecoratedElement<Airport>>> routes = new ArrayList<Vertex<DecoratedElement<Airport>>>();
         depthFirstSearch(graph, origin, dest, routes);
         breadthFirstSearch(graph, origin, dest);       
@@ -161,7 +161,7 @@ public class Main {
     	
         for (Iterator<Vertex<DecoratedElement<Airport>>> item = graph.getVertices(); item.hasNext();) {
         	object = item.next().getElement(); 
-            System.out.printf("IATA: %s\t Country: %s\t Airport name: %s\n", object.getElement().getID(), object.getElement().getCountry(), object.getElement().getName());
+            System.out.printf("IATA: %s\t Country: %s \t Airport name: %s\n", object.getElement().getID(), object.getElement().getCountry(), object.getElement().getName());
         }
     }
     
@@ -369,6 +369,7 @@ public class Main {
     	while(it2.hasNext()) {
     		dec = it2.next().getElement();
     		dec.setVisited(false);
+    		dec.setParent(null);
     	}   	
 
     	try {
@@ -390,28 +391,45 @@ public class Main {
         		}
         	}
         	
-        	if(!noEnd) {        		
-        		printer(v.getElement(), origin.getElement()); 		    	
+        	if(!noEnd) {
+        		System.out.println("\nThe route that the spy has followed is: \n");
+        		//printer(dest.getElement(), origin.getElement()); 
+        		Queue<DecoratedElement<Airport>> end = new LinkedList();
+        		end.add(v.getElement());
+        		DecoratedElement<Airport> aux;
+        		System.out.println("Hello");
+        		do {        			
+        			aux = v.getElement().getParent();
+        			end.add(aux);
+        		}while(!aux.equals(origin.getElement()));
+        		
+        		System.out.println("Hello");
+        		
+        		while(! end.isEmpty()) {
+        			System.out.printf("/ %s ", end.remove().getElement().getID());
+        		}
         	}
-    	}
-    	catch(NullPointerException e) {
-    		
+        	
+    	}catch(NullPointerException e) {
+    		System.out.println("There is no connection available");
     	}
 
     }
 
     
-    private static void printer(DecoratedElement<Airport> v, DecoratedElement<Airport> origin) {
-		System.out.println("\nThe route that the spy has followed is: \n");    		
-		DecoratedElement<Airport> aux;
-		aux = v.getParent();
-		
-		if(aux.getElement().equals(origin.getElement())) {
+    private static void printer(DecoratedElement<Airport> v, DecoratedElement<Airport> origin) {		    		
+		DecoratedElement<Airport> aux = v.getParent();
+		try {
+			
+			if(!aux.equals(origin)) {
+				printer(aux, origin);				
+			}
+						
 			System.out.printf("/ %s ", aux.getElement().getID());
-		}else {
-			printer(aux, origin);			
-		}		
-		System.out.printf("/ %s ", v.getElement().getID()); 
+			//System.out.printf("/ %s ", v.getElement().getID());
+		}catch(StackOverflowError e) {
+			
+		}
     }
     
     /*********************************************************************
